@@ -5,13 +5,14 @@ using UnityEngine;
 public class JumpingJohnMovement : MonoBehaviour
 {
     public float turnSpeed = 20f;
-    public float moveSpeed = 10f;
+    public float moveSpeed = 1f;
     public float JumpForce = 10f;
     public float GravityModifier = 1f;
     public float outOfBounds = -10f;
     public bool IsOnGround = true;
     public bool isAtCheckpoint = false;
     public GameObject checkPointAreaObject;
+    public GameObject finishAreaObject;
     private Vector3 _movement;
     // Animator _Animator;
     private Rigidbody _rigidbody;
@@ -19,11 +20,13 @@ public class JumpingJohnMovement : MonoBehaviour
     private Vector3 _defaultGravity = new Vector3(0f, -9.81f, 0f);
     private Vector3 _startingPosition;
 
+    private Vector3 _checkpointPosition;
+
     // Start is called before the first frame update
     void Start()
     {
         // _Animator = GetComponent<Animator> ();
-        _rigidbody = GetComponent<Rigidbody> ();
+        _rigidbody = GetComponent<Rigidbody>();
         Physics.gravity = _defaultGravity;
         Physics.gravity *= GravityModifier;
         _startingPosition = transform.position;
@@ -39,12 +42,19 @@ public class JumpingJohnMovement : MonoBehaviour
 
         if(transform.position.y < outOfBounds)
         {
-            transform.position = _startingPosition;
+            if(isAtCheckpoint)
+            {
+                transform.position = _checkpointPosition;
+            }
+            else
+            {
+                transform.position = _startingPosition;
+            }
         }
     }
 
     // Update is called once per frame
-    void FixedUpdate ()
+    void FixedUpdate()
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
@@ -76,7 +86,13 @@ public class JumpingJohnMovement : MonoBehaviour
         if(other.gameObject == checkPointAreaObject)
         {
             isAtCheckpoint = true;
-            _startingPosition = checkPointAreaObject.transform.position;
+            _checkpointPosition = checkPointAreaObject.transform.position;
+        }
+
+        if(other.gameObject == finishAreaObject)
+        {
+            isAtCheckpoint = false;
+            transform.position = _startingPosition;
         }
     }
 }
