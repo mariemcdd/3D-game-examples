@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class JumpingJohnMovement : MonoBehaviour
 {
+    public int score = 0;
     public float turnSpeed = 20f;
     public float moveSpeed = 1f;
     public float JumpForce = 10f;
@@ -80,6 +81,18 @@ public class JumpingJohnMovement : MonoBehaviour
         {
             IsOnGround = true;
         }
+
+        if(collision.gameObject.CompareTag("Spinner"))
+        {
+            if(isAtCheckpoint)
+            {
+                transform.position = checkPointAreaObject.transform.position;
+            }
+            else
+            {
+                transform.position = _startingPosition;
+            }
+        }
     }
     void OnTriggerEnter(Collider other)
     {
@@ -93,6 +106,17 @@ public class JumpingJohnMovement : MonoBehaviour
         {
             isAtCheckpoint = false;
             transform.position = _startingPosition;
+        }
+
+        if(other.gameObject.CompareTag("Collectible - Destroy"))
+        {
+            score++;
+            Destroy(other.gameObject);
+        }
+
+        if(other.gameObject.CompareTag("Collectible - Return"))
+        {
+            other.gameObject.SetActive(false);
         }
     }
 }
