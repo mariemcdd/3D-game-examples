@@ -20,8 +20,8 @@ public class JumpingJohnMovement : MonoBehaviour
     private Quaternion _rotation = Quaternion.identity;
     private Vector3 _defaultGravity = new Vector3(0f, -9.81f, 0f);
     private Vector3 _startingPosition;
-
     private Vector3 _checkpointPosition;
+    private GameObject[] _collectibles;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +31,7 @@ public class JumpingJohnMovement : MonoBehaviour
         Physics.gravity = _defaultGravity;
         Physics.gravity *= GravityModifier;
         _startingPosition = transform.position;
+        _collectibles = GameObject.FindGameObjectsWithTag("Collectible - Return");
     }
 
     void Update()
@@ -45,10 +46,12 @@ public class JumpingJohnMovement : MonoBehaviour
         {
             if(isAtCheckpoint)
             {
+                ReturningCollectibles();
                 transform.position = _checkpointPosition;
             }
             else
             {
+                ReturningCollectibles();
                 transform.position = _startingPosition;
             }
         }
@@ -86,10 +89,12 @@ public class JumpingJohnMovement : MonoBehaviour
         {
             if(isAtCheckpoint)
             {
+                ReturningCollectibles();
                 transform.position = checkPointAreaObject.transform.position;
             }
             else
             {
+                ReturningCollectibles();
                 transform.position = _startingPosition;
             }
         }
@@ -105,6 +110,7 @@ public class JumpingJohnMovement : MonoBehaviour
         if(other.gameObject == finishAreaObject)
         {
             isAtCheckpoint = false;
+            ReturningCollectibles();
             transform.position = _startingPosition;
         }
 
@@ -116,7 +122,17 @@ public class JumpingJohnMovement : MonoBehaviour
 
         if(other.gameObject.CompareTag("Collectible - Return"))
         {
-            other.gameObject.SetActive(false);
+            score++;
+            other.gameObject.GetComponent<Collectibles>().HideCollectibles();
+        }
+    }
+
+    void ReturningCollectibles()
+    {
+        for(int i = 0; i < _collectibles.Length; i++)
+        {
+            _collectibles[i].SetActive(true);
+            _collectibles[i].GetComponent<Collectibles>().ReturnCollectibles();
         }
     }
 }
